@@ -1,0 +1,28 @@
+{
+  "name": "hupu_api",
+  "version": "1.0.0",
+  "description": "node_webapi",
+  "main": "entry.js",
+  "scripts": {
+    "dev": "node entry.js"
+  },
+  "author": "hale",
+  "license": "ISC",
+  "dependencies": {
+    "babel": "^6.23.0",
+    "body-parser": "^1.17.1",
+    "cheerio": "^0.22.0",
+    "cookie-parser": "^1.4.3",
+    "express": "^4.15.2",
+    "https": "^1.0.0",
+    "multer": "^1.3.0",
+    "parser": "^0.1.4",
+    "request": "^2.81.0",
+    "request-promise": "^4.2.0",
+    "url": "^0.11.0",
+    "utils": "^0.3.1"
+  },
+  "devDependencies": {
+    "babel-preset-es2015": "^6.24.0"
+  }
+}
