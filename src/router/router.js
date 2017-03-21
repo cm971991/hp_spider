@@ -4,7 +4,7 @@
 
 const router = {
   hupu: {
-    getList: '/hupu/getlist'
+    getList: '/hupu/getlist/'
   }
 };
 

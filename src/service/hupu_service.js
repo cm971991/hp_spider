@@ -10,9 +10,11 @@ let hupu_service = {
   
   spider: function (req, res) {
     let _this = this;
+    let param = req.params.id;
+    console.log("[Params]:", param)
     
     let options = {
-      url: config.spiderUrl,
+      url: config.spiderUrl + param,
       transform: function (body) {
         return cheerio.load(body);
       }
@@ -26,19 +28,21 @@ let hupu_service = {
       .catch(function (err) {
         console.log('err:', err);
       });
-  
+    
     let c = setInterval(function () {
       if (_this.result && _this.result.list && _this.result.list[19].article.header) {
+        console.log("_this.result.list.length:", _this.result.list.length)
         clearInterval(c);
         let body = JSON.stringify(_this.result);
         res.send(body);
       }
-    }, 1000);
+    }, 500);
   },
   
   analyseHomePage: function ($) {
     let _this = this;
     let $parentElement = $('.news-list ul li a');
+    _this.list = [];
     $parentElement.each(function (index, element) {
       let $contentElement = $(element).find('.news-wrap').find('.news-txt');
       let $sourceElement = $($contentElement).find('.news-status-bar').find('.news-info');
@@ -52,13 +56,21 @@ let hupu_service = {
       _this.list.push(model);
     });
     
-    let paging = new _this.paging(1, 2, 3, 4);
+    let $pagingElement = $('.m-page');
+    let homePage = $pagingElement.find('a:first-child').attr('href');
+    homePage = homePage.substring(homePage.lastIndexOf('/') + 1, homePage.length);
+    let previousPage = $pagingElement.find('a:nth-child(2)').attr('href');
+    previousPage = previousPage.substring(previousPage.lastIndexOf('/') + 1, previousPage.length);
+    let nextPage = $pagingElement.find('a:nth-child(4)').attr('href');
+    nextPage = nextPage.substring(nextPage.lastIndexOf('/') + 1, nextPage.length);
+    let lastPage = $pagingElement.find('a:last-child').attr('href');
+    lastPage = lastPage.substring(lastPage.lastIndexOf('/') + 1, lastPage.length);
+    let paging = new _this.paging(homePage, previousPage, nextPage, lastPage);
     
     _this.result = new _this.newsObject(_this.list, paging);
   },
   
-  analyseItemPage: function (context)
-  {
+  analyseItemPage: function (context) {
     let _this = context;
     this.list.forEach(function (item, index, array) {
       if (item) {

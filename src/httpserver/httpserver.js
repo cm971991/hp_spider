@@ -8,7 +8,7 @@ let config = require('../common/config');
 
 let run = function () {
   let app = express();
-  app.get(router.hupu.getList, function (req, res) {
+  app.get(router.hupu.getList + ':id', function (req, res) {
     hupu.getList(req, res);
   });
   
