@@ -47,12 +47,13 @@ let hupu_service = {
       let $contentElement = $(element).find('.news-wrap').find('.news-txt');
       let $sourceElement = $($contentElement).find('.news-status-bar').find('.news-info');
       
-      let url = 'https:' + $(element).attr('href');
-      let router = '/vux_demo/detail/' + (index + 1);
+      let pageName = $(element).attr('href');
+      let link = 'https:' + pageName;
+      let id = pageName.substring(pageName.lastIndexOf('/') + 1, pageName.length).split('.')[0];
       let title = $($contentElement).find('h3').text();
       let source = $($sourceElement).find('.news-source').text();
       let time = $($sourceElement).find('.news-time').text();
-      let model = new _this.newsList(title, url, router, time, source, {});
+      let model = new _this.newsList(title, link, id, time, source, {});
       _this.list.push(model);
     });
     
@@ -86,7 +87,12 @@ let hupu_service = {
             let $articleElement = $('section .detail-content');
             let header = $articleElement.find('.artical-title').find('h1').text();
             let articleImg = $articleElement.find('.article-content').find('img').attr('src');
-            let articleContent = $articleElement.find('.article-content').find('p').text();
+            
+            let articleContent = [];
+            let articleContentElement = $articleElement.find('.article-content').find('p');
+            articleContentElement.each(function (index, element) {
+              articleContent.push($(element).text());
+            });
             item.article = new _this.article(header, articleImg, articleContent);
           })
           .catch(function (err) {
@@ -105,10 +111,10 @@ let hupu_service = {
   
   list: [],
   
-  newsList: function (title, link, router, time, source, article) {
+  newsList: function (title, link, id, time, source, article) {
     this.title = title;
     this.link = link;
-    this.router = router;
+    this.id = id;
     this.time = time;
     this.source = source;
     this.article = article;
