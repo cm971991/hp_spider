@@ -11,7 +11,7 @@ let hupu_service = {
   spider: function (req, res) {
     let _this = this;
     let param = req.params.id;
-    console.log("[Params]:", param)
+    console.log("[Params]:", param);
     
     let options = {
       url: config.spiderUrl + param,
@@ -31,7 +31,6 @@ let hupu_service = {
     
     let c = setInterval(function () {
       if (_this.result && _this.result.list && _this.result.list[19].article.header) {
-        console.log("_this.result.list.length:", _this.result.list.length)
         clearInterval(c);
         let body = JSON.stringify(_this.result);
         res.send(body);
@@ -71,6 +70,10 @@ let hupu_service = {
     _this.result = new _this.newsObject(_this.list, paging);
   },
   
+  /**
+   *
+   * @param context
+   */
   analyseItemPage: function (context) {
     let _this = context;
     this.list.forEach(function (item, index, array) {
@@ -83,7 +86,7 @@ let hupu_service = {
         };
         
         rp(options)
-          .then(function ($, rep) {
+          .then(function ($) {
             let $articleElement = $('section .detail-content');
             let header = $articleElement.find('.artical-title').find('h1').text();
             let articleImg = $articleElement.find('.article-content').find('img').attr('src');
@@ -93,6 +96,13 @@ let hupu_service = {
             articleContentElement.each(function (index, element) {
               articleContent.push($(element).text());
             });
+            
+            let $replyElement = $('section .m-reply');
+            if ($replyElement && $replyElement.length >= 1) {
+              let $brightElement = $replyElement.find('.bright-reply');
+              
+            }
+            
             item.article = new _this.article(header, articleImg, articleContent);
           })
           .catch(function (err) {
@@ -102,15 +112,30 @@ let hupu_service = {
     })
   },
   
+  list: [],
+  brightReplyList: [],
+  newestReplyList: [],
   result: {},
   
+  /**
+   * 新闻整体对象
+   * @param list 新闻列表
+   * @param paging  分页
+   */
   newsObject: function (list, paging) {
     this.list = list;
     this.paging = paging;
   },
   
-  list: [],
-  
+  /**
+   * 新闻列表
+   * @param title   新闻标题
+   * @param link    新闻链接
+   * @param id      新闻id
+   * @param time    新闻发表时间
+   * @param source  新闻来源
+   * @param article 新闻
+   */
   newsList: function (title, link, id, time, source, article) {
     this.title = title;
     this.link = link;
@@ -120,12 +145,55 @@ let hupu_service = {
     this.article = article;
   },
   
-  article: function (header, image, content) {
+  /**
+   * 新闻详情
+   * @param header  详情标题
+   * @param image   详情图片
+   * @param content 详情内
+   */
+  article: function (header, image, content, brightReply, newestReply) {
     this.header = header;
     this.image = image;
     this.content = content;
+    this.brightReply = brightReply;
+    this.newestReply = newestReply;
   },
   
+  /**
+   * 亮评对象
+   * @param userName      用户名
+   * @param time          评论发表时间
+   * @param brightNumber  亮了个数
+   * @param content       评论内容
+   */
+  brightReply: function (userName, time, brightNumber, content) {
+    this.userName = userName;
+    this.time = time;
+    this.brightNumber = brightNumber;
+    this.content = content;
+  },
+  
+  /**
+   * 最新评论对象
+   * @param userName      用户名
+   * @param time          评论发表时间
+   * @param brightNumber  亮了个数
+   * @param content       评论内容
+   */
+  newestReply: function (userName, time, brightNumber, content) {
+    this.userName = userName;
+    this.time = time;
+    this.brightNumber = brightNumber;
+    this.content = content;
+  },
+  
+  /**
+   * 分页对象
+   * @param home      首页
+   * @param previous  上一页
+   * @param next      下一页
+   * @param last      末页
+   */
   paging: function (home, previous, next, last) {
     this.homePage = home;
     this.previousPage = previous;
